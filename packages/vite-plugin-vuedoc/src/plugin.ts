@@ -46,9 +46,8 @@ export function createVueDocPlugin(options: Partial<VueDocPluginOptions>) {
     },
     resolveId(id) {
       if (/\.md\.vdpv_(\d+)\.vd$/.test(id)) {
-        const idPath: string = id.startsWith(config.root + '/') ? id : path.join(config.root, id.substr(1))
-        debug('resolve demo:', idPath)
-        return idPath
+        debug('resolve demo:', id)
+        return id
       }
     },
     load(id) {
@@ -56,10 +55,7 @@ export function createVueDocPlugin(options: Partial<VueDocPluginOptions>) {
       if (mat && mat.length >= 2) {
         const index: number = Number(mat[1])
         debug(`load:${id} ${index}`)
-        const mdFileName = id.replace(`.vdpv_${index}.vd`, '')
-        const mdFilePath = mdFileName.startsWith(config.root + '/')
-          ? mdFileName
-          : path.join(config.root, mdFileName.substr(1))
+        const mdFilePath = id.replace(`.vdpv_${index}.vd`, '')
 
         const demoBlocks = cacheDemos.get(mdFilePath)
         return demoBlocks?.[index].code
@@ -67,7 +63,7 @@ export function createVueDocPlugin(options: Partial<VueDocPluginOptions>) {
     },
     transform(code, id) {
       if (id.endsWith('.md')) {
-        const filePath = id.startsWith(config.root + '/') ? id : path.join(config.root, id.substr(1))
+        const filePath = id
         debug(`transform:md -> ${filePath}`)
         debug(`transform:config -> ${config.root}`)
         const markdownToVue = createMarkdownRenderFn(_options, config)
